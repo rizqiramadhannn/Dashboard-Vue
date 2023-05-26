@@ -1,15 +1,26 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <TopNav></TopNav>
+  <!-- <LoginForm></LoginForm> -->
+  <!-- <RegistrationForm></RegistrationForm> -->
+  <MainDashboard></MainDashboard>
+  <BottomNav></BottomNav>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+// import LoginForm from './components/forms/LoginForm.vue';
+// import RegistrationForm from './components/forms/RegistrationForm.vue'
+import BottomNav from './components/BottomNav.vue'
+import TopNav from './components/TopNav.vue'
+import MainDashboard from './components/MainDashboard.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    // LoginForm,
+    // RegistrationForm,
+    BottomNav,
+    TopNav,
+    MainDashboard
   }
 }
 </script>
