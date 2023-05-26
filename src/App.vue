@@ -1,26 +1,32 @@
 <template>
-  <TopNav></TopNav>
-  <!-- <LoginForm></LoginForm> -->
+  <!-- <TopNav></TopNav> -->
+  <LoginForm></LoginForm>
   <!-- <RegistrationForm></RegistrationForm> -->
-  <MainDashboard></MainDashboard>
-  <BottomNav></BottomNav>
+  <!-- <MainDashboard></MainDashboard> -->
+  <!-- <AddItemForm></AddItemForm> -->
+  <!-- <AddSupplierForm></AddSupplierForm> -->
+  <!-- <BottomNav></BottomNav> -->
 </template>
 
 <script>
-// import LoginForm from './components/forms/LoginForm.vue';
+import LoginForm from './components/forms/LoginForm.vue';
 // import RegistrationForm from './components/forms/RegistrationForm.vue'
-import BottomNav from './components/BottomNav.vue'
-import TopNav from './components/TopNav.vue'
-import MainDashboard from './components/MainDashboard.vue'
+// import BottomNav from './components/BottomNav.vue'
+// import TopNav from './components/TopNav.vue'
+// import MainDashboard from './components/MainDashboard.vue'
+// import AddItemForm from './components/forms/AddItemForm.vue';
+// import AddSupplierForm from './components/forms/AddSupplierForm.vue'
 
 export default {
   name: 'App',
   components: {
-    // LoginForm,
+    LoginForm,
     // RegistrationForm,
-    BottomNav,
-    TopNav,
-    MainDashboard
+    // BottomNav,
+    // TopNav,
+    // AddSupplierForm
+    // AddItemForm
+    // MainDashboard
   }
 }
 </script>
