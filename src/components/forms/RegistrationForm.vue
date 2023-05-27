@@ -17,30 +17,50 @@
         <div>
           <button type="submit">Daftar</button>
         </div>
-        <a href="" class="not-registered">Sudah punya akun</a>
+        <router-link to="/" class="registered">Sudah punya akun</router-link>
       </form>
     </div>
   </template>
   
   <script>
-  export default {
-    data() {
-      return {
-        username: '',
-        profilename: '',
-        password: ''
-      };
-    },
-    methods: {
-      register() {
-        // Perform login logic here
-        // For simplicity, let's just log the username and password
-        console.log(`Username: ${this.username}, Password: ${this.password}`);
-        // You can make an API call here to authenticate the user
-        // and handle the response accordingly
+    export default {
+      data() {
+        return {
+          username: '',
+          profilename: '',
+          password: ''
+        };
+      },
+      methods: {
+        async register() {
+          try {
+            const response = await fetch('http://159.223.57.121:8090/auth/register', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                username: this.username,
+                profileName: this.profilename,
+                password: this.password,
+              }),
+            });
+
+            if (response.ok) {
+              // Registration success, handle accordingly (e.g., display success message)
+              console.log('Registration successful');
+              this.$router.push({ path: '/' });
+            } else {
+              // Registration failed, handle accordingly (e.g., display error message)
+              console.log('Registration failed');
+            }
+          } catch (error) {
+            // Handle network or server errors
+            console.log('Error:', error);
+          }
+        }
       }
-    }
-  };
+    };
   </script>
 
 <style scoped>

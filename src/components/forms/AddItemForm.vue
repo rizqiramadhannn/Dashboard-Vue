@@ -48,6 +48,7 @@
       cancelForm() {
         // Handle cancel form action (e.g., navigate back or reset form)
         console.log('Form canceled');
+        this.$router.go(-1);
       }
     }
   };
