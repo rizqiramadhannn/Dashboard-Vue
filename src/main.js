@@ -5,25 +5,26 @@ import LoginForm from './components/forms/LoginForm.vue';
 import RegistrationForm from './components/forms/RegistrationForm.vue'
 import MainDashboard from './components/MainDashboard.vue';
 import AddItemForm from './components/forms/AddItemForm.vue';
+import AddSupplierForm from './components/forms/AddSupplierForm.vue';
 import { createStore } from 'vuex';
 
 const store = createStore({
     state: {
-      token: '' // Initialize the token as an empty string
+      token: '' 
     },
     mutations: {
       setToken(state, token) {
-          state.token = token; // Set the token value
+          state.token = token; 
         }
     },
     actions: {
       setToken({ commit }, token) {
-          commit('setToken', token); // Call the mutation to set the token
+          commit('setToken', token); 
         }
     },
     getters: {
         getToken(state) {
-            return state.token; // Retrieve the token value
+            return state.token; 
         }
     }
   });
@@ -45,10 +46,15 @@ const routes = [
     component: MainDashboard,
   },
   {
-    path: '/addItem',
-    name: 'AddItem',
+    path: '/formItem',
+    name: 'FormItem',
     component: AddItemForm,
   },
+  {
+    path: '/formSupplier',
+    name: 'FormSupplier',
+    component: AddSupplierForm
+  }
 ];
 
 const router = createRouter({

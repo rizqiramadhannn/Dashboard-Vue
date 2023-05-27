@@ -1,58 +1,120 @@
 <template>
-    <div class="container">
-        <div class="tambah-barang">
-        <h3 class="title">Tambah Barang</h3>
-        <form @submit.prevent="submitForm">
-            <div class="form-group">
-            <label for="nama-barang">Nama barang</label>
-            <input type="text" id="nama-barang" placeholder="Masukan Nama Barang" v-model="namaBarang" required>
-            </div>
-            <div class="form-group">
-            <label for="harga-barang">Harga Barang</label>
-            <input type="number" id="harga-barang" placeholder="Masukan Harga Barang" v-model="hargaBarang" required>
-            </div>
-            <div class="form-group">
-            <label for="stok-barang">Stok barang</label>
-            <input type="number" id="stok-barang" placeholder="Masukan Jumlah Stok Barang" v-model="stokBarang" required>
-            </div>
-            <div class="form-group">
-            <label for="supplier-barang">Supplier barang</label>
-            <input type="text" id="supplier-barang" v-model="supplierBarang" required>
-            </div>
-            <div class="button-group">
-            <button class="btn-cancel" @click="cancelForm">Kembali</button>
-            <button type="submit" class="btn-submit">Submit</button>
-            </div>
-        </form>
+  <div class="container">
+    <div class="tambah-barang">
+      <h3 class="title">Tambah Barang</h3>
+      <form @submit.prevent="submitForm">
+        <div class="form-group">
+          <label for="nama-barang">Nama barang</label>
+          <input type="text" id="nama-barang" placeholder="Masukan Nama Barang" v-model="namaBarang" required>
         </div>
+        <div class="form-group">
+          <label for="harga-barang">Harga Barang</label>
+          <input type="number" id="harga-barang" placeholder="Masukan Harga Barang" v-model="hargaBarang" required>
+        </div>
+        <div class="form-group">
+          <label for="stok-barang">Stok barang</label>
+          <input type="number" id="stok-barang" placeholder="Masukan Jumlah Stok Barang" v-model="stokBarang" required>
+        </div>
+        <div class="form-group">
+          <label for="supplier-barang">Supplier barang</label>
+          <div class="dropdown">
+            <input type="text" id="supplier-barang" v-model="selectedSupplier" @click="showSupplierList" required>
+            <ul class="dropdown-list" v-show="showDropdown">
+              <li v-for="supplier in supplierList" :key="supplier.id" @click="selectSupplier(supplier.name)">{{ supplier.name }}</li>
+            </ul>
+          </div>
+        </div>
+        <div class="button-group">
+          <button class="btn-cancel" @click="cancelForm">Kembali</button>
+          <button type="submit" class="btn-submit">Submit</button>
+        </div>
+      </form>
     </div>
-  </template>
+  </div>
+</template>
   
   <script>
-  export default {
-    data() {
-      return {
-        namaBarang: '',
-        hargaBarang: '',
-        stokBarang: '',
-        supplierBarang: ''
-      };
-    },
-    methods: {
-      submitForm() {
-        // Handle form submission
-        // You can access the form data through the component's data properties (e.g., this.namaBarang, this.hargaBarang, etc.)
-        // Perform necessary actions such as sending data to a server or updating the state
-        console.log('Form submitted');
+    export default {
+      props: {
+        itemsSupp: {
+          type: Array,
+          required: true
+        }
       },
-      cancelForm() {
-        // Handle cancel form action (e.g., navigate back or reset form)
-        console.log('Form canceled');
-        this.$router.go(-1);
+      data() {
+        return {
+          namaBarang: '',
+          hargaBarang: '',
+          stokBarang: '',
+          selectedSupplier: '',
+          showDropdown: false,
+          supplierList: [],
+          url: '',
+        };
+      },
+      methods: {
+        submitForm() {
+            const formData = {
+              namaBarang: this.namaBarang,
+              hargaBarang: this.hargaBarang,
+              stokBarang: this.stokBarang,
+              supplierBarang: this.selectedSupplier
+            };
+    
+            fetch(this.url, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(formData)
+            })
+              .then(response => {
+                if (response.ok) {
+                  console.log('Form submitted successfully');
+                  this.resetForm();
+                } else {
+                  console.log('Form submission failed');
+                }
+              })
+              .catch(error => {
+                console.log('Network error:', error);
+              });
+        },
+        cancelForm() {
+          console.log('Form canceled');
+          this.$router.go(-1);
+        },
+        resetForm() {
+          this.namaBarang = '';
+          this.hargaBarang = '';
+          this.stokBarang = '';
+          this.supplierBarang = '';
+        },
+        showSupplierList() {
+          this.showDropdown = true;
+        },
+        selectSupplier(supplierName) {
+          this.selectedSupplier = supplierName;
+          this.showDropdown = false;
+          this.$emit('selectSupplier', supplierName);
+        }
+      },
+      mounted() {
+        console.log(this.itemsSupp)
+        this.supplierList = this.itemsSupp
+        if (
+            this.namaBarang === '' &&
+            this.hargaBarang === '' &&
+            this.stokBarang === '' 
+          ) {
+            this.url = 'http://159.223.57.121:8090/barang/create'
+          } else {
+            this.url = 'editurl'
+          }
+          console.log(this.url)
       }
-    }
-  };
-  </script>
+    };
+    </script>
   
   <style scoped>
   .container {
@@ -125,7 +187,36 @@
     background-color: #6394c7;
     color: #fff;
   }
-  
-  /* Add your own styles as needed */
+
+  .dropdown {
+  position: relative;
+}
+
+.dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-top: none;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.dropdown-list li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.dropdown-list li:hover {
+  background-color: #f1f1f1;
+}
+
+#supplier-barang {
+  width: 600px;
+}
   </style>
   

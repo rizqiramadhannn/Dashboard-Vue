@@ -25,7 +25,7 @@
         <td v-if="selectedOption === 'supplier'">{{ item.alamat }}</td>
         <td v-if="selectedOption === 'supplier'">{{ item.noTelp }}</td>
         <td>
-          <button class="delete-button">Hapus</button>
+          <button class="delete-button" @click="deleteItem(item.id)">Hapus</button>
           <button class="update-button">Update</button>
         </td>
       </tr>
@@ -48,16 +48,50 @@ export default {
   computed: {
     reversedItems() {
       return this.items.slice().reverse();
+    },
+    token() {
+      return this.$store.getters.getToken;
+    }
+  },
+  methods: {
+    deleteItem(id) {
+      let deleteUrl = '';
+      if (this.selectedOption === 'supplier') {
+        deleteUrl = `http://159.223.57.121:8090/supplier/delete/${id}`;
+      } else if (this.selectedOption === 'barang') {
+        deleteUrl = `http://159.223.57.121:8090/barang/delete/${id}`;
+      }
+      fetch(deleteUrl, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${this.token}`
+        }
+      })
+        .then(response => {
+          if (response.ok) {
+              console.log('Item deleted successfully');
+              setTimeout(() => {
+              location.reload();
+            }, 1000);
+          } else {
+            // Handle delete request error
+            console.log('Item deletion failed');
+          }
+        })
+        .catch(error => {
+          // Handle network error
+          console.log('Network error:', error);
+        });
     }
   }
 };
 </script>
 
-  <style scoped>
+<style scoped>
 .data-table {
   width: 98%;
   border-collapse: collapse;
-  border: 1px solid #ddd; /* Add outer border */
+  border: 1px solid #ddd; 
   margin: 0 0.8rem;
 }
 
@@ -70,14 +104,14 @@ export default {
 }
 
 .data-table th {
-  background-color: #f8f9fb; /* Set background color of th to gray */
+  background-color: #f8f9fb; 
   color: #000;
   text-align: center;
 }
 
 .data-table td:last-child {
-    display: flex;
-    justify-content: space-evenly;
+  display: flex;
+  justify-content: space-evenly;
 }
 
 .data-table th:last-child,
@@ -103,7 +137,4 @@ export default {
   cursor: pointer;
 }
 
-/* Add your own styles as needed */
 </style>
-
-  
