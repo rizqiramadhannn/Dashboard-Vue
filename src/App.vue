@@ -1,34 +1,32 @@
 <template>
-  <!-- <TopNav></TopNav> -->
-  <LoginForm></LoginForm>
-  <!-- <RegistrationForm></RegistrationForm> -->
-  <!-- <MainDashboard></MainDashboard> -->
-  <!-- <AddItemForm></AddItemForm> -->
-  <!-- <AddSupplierForm></AddSupplierForm> -->
-  <!-- <BottomNav></BottomNav> -->
+  <div id="app">
+    <TopNav v-if="showTopNav"></TopNav>
+    <router-view></router-view>
+    <BottomNav v-if="showBottomNav"></BottomNav>
+  </div>
 </template>
 
 <script>
-import LoginForm from './components/forms/LoginForm.vue';
-// import RegistrationForm from './components/forms/RegistrationForm.vue'
-// import BottomNav from './components/BottomNav.vue'
-// import TopNav from './components/TopNav.vue'
-// import MainDashboard from './components/MainDashboard.vue'
-// import AddItemForm from './components/forms/AddItemForm.vue';
-// import AddSupplierForm from './components/forms/AddSupplierForm.vue'
+import TopNav from '@/components/TopNav.vue';
+import BottomNav from '@/components/BottomNav.vue';
 
 export default {
   name: 'App',
   components: {
-    LoginForm,
-    // RegistrationForm,
-    // BottomNav,
-    // TopNav,
-    // AddSupplierForm
-    // AddItemForm
-    // MainDashboard
-  }
-}
+    TopNav,
+    BottomNav,
+  },
+  computed: {
+    showTopNav() {
+      // Check if the current route is neither "/" nor "/registration"
+      return this.$route.path !== '/' && this.$route.path !== '/registration';
+    },
+    showBottomNav() {
+      // Check if the current route is neither "/" nor "/registration"
+      return this.$route.path !== '/' && this.$route.path !== '/registration';
+    },
+  },
+};
 </script>
 
 <style>

@@ -1,46 +1,58 @@
 <template>
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>No</th>
-          <th>Nama Barang</th>
-          <th>Stock</th>
-          <th>Harga</th>
-          <th>Nama Supplier</th>
-          <th>Alamat Supplier</th>
-          <th>No Telp Supplier</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in items" :key="item.id">
-          <td>{{ item.id }}</td>
-          <td>{{ item.name }}</td>
-          <td>{{ item.category }}</td>
-          <td>{{ item.price }}</td>
-          <td>{{ item.quantity }}</td>
-          <td>{{ item.supplier }}</td>
-          <td>{{ item.location }}</td>
-          <td>
-            <button class="delete-button">Hapus</button>
-            <button class="update-button">Update</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </template>
-  
-  <script>
-  export default {
-    props: {
-      items: {
-        type: Array,
-        required: true
-      }
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th v-if="selectedOption === 'barang'">Nama Barang</th>
+        <th v-if="selectedOption === 'barang'">Stock</th>
+        <th v-if="selectedOption === 'barang'">Harga</th>
+        <th>Nama Supplier</th>
+        <th>Alamat Supplier</th>
+        <th>No Telp Supplier</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="item in reversedItems" :key="item.id">
+        <td>{{ item.id }}</td>
+        <td v-if="selectedOption === 'barang'">{{ item.namaBarang }}</td>
+        <td v-if="selectedOption === 'barang'">{{ item.stok }}</td>
+        <td v-if="selectedOption === 'barang'">{{ item.harga }}</td>
+        <td v-if="selectedOption === 'barang'">{{ item.supplier.namaSupplier }}</td>
+        <td v-if="selectedOption === 'barang'">{{ item.supplier.alamat }}</td>
+        <td v-if="selectedOption === 'barang'">{{ item.supplier.noTelp }}</td>
+        <td v-if="selectedOption === 'supplier'">{{ item.namaSupplier }}</td>
+        <td v-if="selectedOption === 'supplier'">{{ item.alamat }}</td>
+        <td v-if="selectedOption === 'supplier'">{{ item.noTelp }}</td>
+        <td>
+          <button class="delete-button">Hapus</button>
+          <button class="update-button">Update</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</template>
+
+<script>
+export default {
+  props: {
+    items: {
+      type: Array,
+      required: true
+    },
+    selectedOption: {
+      type: String,
+      required: true
     }
-  };
-  </script>
-  
+  },
+  computed: {
+    reversedItems() {
+      return this.items.slice().reverse();
+    }
+  }
+};
+</script>
+
   <style scoped>
 .data-table {
   width: 98%;

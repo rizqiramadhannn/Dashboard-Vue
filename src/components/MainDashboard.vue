@@ -4,7 +4,7 @@
     <div class="dashboard-left">
       <div class="card">
         <img src="../assets/user.png" alt="" class="profile-pic">
-        <h3 class="name">user</h3>
+        <h3 class="name">{{ this.$route.query.username }}</h3>
       </div>
       <div class="menu-card">
         <h3 class="menu-title">Menu</h3>
@@ -28,13 +28,13 @@
       <h1 class="dashboard-title">Dashboard</h1>
       <div class="dashboard-header">
         <div class="header-left">
-          <h2 class="dashboard-subtitle">Barang</h2>
+          <h2 class="dashboard-subtitle">{{ activeOption === 'supplier' ? 'Supplier' : 'Barang' }}</h2>
         </div>
         <div class="header-right">
-          <button class="add-button">Tambah Barang</button>
+          <router-link to="/addItem" class="add-button">Tambah Barang</router-link>
         </div>
       </div>
-      <DataTable :items="items" />
+      <DataTable :items="activeOption === 'barang' ? items : itemsSupp" :selectedOption="activeOption" />
       <div class="pagination">
         <!-- Pagination component or logic goes here -->
       </div>
@@ -47,6 +47,11 @@
 import DataTable from './tables/DataTable.vue';
 
 export default {
+  computed: {
+    token() {
+      return this.$store.getters.getToken;
+    }
+  },
   props: {
     profilePic: {
       type: String,
@@ -55,41 +60,75 @@ export default {
     name: {
       type: String,
       required: true
-    }
+    },
   },
   data() {
     return {
-      items: [
-        // Sample data for demonstration
-        {
-          id: 1,
-          name: "Item 1",
-          category: "Category 1",
-          price: 10.99,
-          quantity: 5,
-          supplier: "Supplier 1",
-          location: "Location 1"
-        },
-        {
-          id: 2,
-          name: "Item 2",
-          category: "Category 2",
-          price: 15.99,
-          quantity: 10,
-          supplier: "Supplier 2",
-          location: "Location 2"
-        },
-        // Add more items as needed
-      ],
+      items: [],
+      itemsSupp: [],
       activeOption: 'barang',
       currentDate: '',
-      currentTime: ''
+      currentTime: '',
     };
   },
   components: {
     DataTable
   },
   methods: {
+    async fetchData() {
+      try {
+        const limit = 10; // example limit
+        const offset = 0; // example offset
+        const url = `http://159.223.57.121:8090/barang/find-all?limit=${limit}&offset=${offset}`;
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.token}` // Access the token from computed property
+          },
+          params: {
+            limit,
+            offset
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          this.items = data.data; // update items array with fetched data
+        } else {
+          // handle error response
+        }
+      } catch (error) {
+        // handle network or server errors
+      }
+    },
+    async fetchDataSupp() {
+      try {
+        const limit = 10; // example limit
+        const offset = 0; // example offset
+        const url = `http://159.223.57.121:8090/supplier/find-all?limit=${limit}&offset=${offset}`;
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.token}` // Access the token from computed property
+          },
+          params: {
+            limit,
+            offset
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          this.itemsSupp = data.data; // update items array with fetched data
+        } else {
+          // handle error response
+        }
+      } catch (error) {
+        // handle network or server errors
+      }
+    },
     setActiveOption(option) {
       this.activeOption = option;
     },
@@ -97,10 +136,13 @@ export default {
       const currentDateObj = new Date();
       this.currentDate = currentDateObj.toDateString();
       this.currentTime = currentDateObj.toLocaleTimeString();
-    }
+    },
+    
   },
   mounted() {
     this.getCurrentDateTime();
+    this.fetchData();
+    this.fetchDataSupp();
   },
 };
 </script>
@@ -258,6 +300,27 @@ export default {
 }
 .content p:first-child {
   padding-top: 1rem;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+button {
+  margin: 0 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Add your own styles as needed */

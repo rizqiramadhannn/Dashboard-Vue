@@ -23,18 +23,38 @@
     data() {
       return {
         username: '',
-        password: ''
+        password: '',
       };
     },
     methods: {
-      login() {
-        // Perform login logic here
-        // For simplicity, let's just log the username and password
-        console.log(`Username: ${this.username}, Password: ${this.password}`);
-        // You can make an API call here to authenticate the user
-        // and handle the response accordingly
-      }
-    }
+      async login() {
+        try {
+          const response = await fetch('http://159.223.57.121:8090/auth/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username: this.username,
+              password: this.password,
+            }),
+          });
+
+          if (response.ok) {
+            // Login success
+            // Redirect to MainDashboard.vue page
+            const data = await response.json();
+            console.log('Token:', data.data.token);
+            this.$store.dispatch('setToken', data.data.token);
+            this.$router.push({ path: '/dashboard', query: { username: this.username } });
+          } else {
+            // Login failed, handle accordingly (e.g., display error message)
+          }
+        } catch (error) {
+          // Handle network or server errors
+        }
+      },
+    },
   };
   </script>
 
@@ -99,4 +119,4 @@ button:hover {
   background-color: #0056b3;
 }
 </style>
-  
+
