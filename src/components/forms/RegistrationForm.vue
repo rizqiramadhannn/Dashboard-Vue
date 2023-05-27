@@ -47,7 +47,6 @@
             });
 
             if (response.ok) {
-              // Registration success, handle accordingly (e.g., display success message)
               console.log('Registration successful');
               this.$router.push({ path: '/' });
             } else {

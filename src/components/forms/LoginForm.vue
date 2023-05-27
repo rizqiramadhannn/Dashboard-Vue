@@ -41,10 +41,9 @@
           });
 
           if (response.ok) {
-            // Login success
-            // Redirect to MainDashboard.vue page
             const data = await response.json();
             console.log('Token:', data.data.token);
+            localStorage.setItem('token', this.token);
             this.$store.dispatch('setToken', data.data.token);
             this.$router.push({ path: '/dashboard', query: { username: this.username } });
           } else {

@@ -18,11 +18,9 @@ export default {
   },
   computed: {
     showTopNav() {
-      // Check if the current route is neither "/" nor "/registration"
       return this.$route.path !== '/' && this.$route.path !== '/registration';
     },
     showBottomNav() {
-      // Check if the current route is neither "/" nor "/registration"
       return this.$route.path !== '/' && this.$route.path !== '/registration';
     },
   },

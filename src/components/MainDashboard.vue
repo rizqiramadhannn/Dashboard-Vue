@@ -31,7 +31,9 @@
           <h2 class="dashboard-subtitle">{{ activeOption === 'supplier' ? 'Supplier' : 'Barang' }}</h2>
         </div>
         <div class="header-right">
-          <router-link to="/addItem" class="add-button">Tambah Barang</router-link>
+          <router-link :to="{ path: activeOption === 'barang' ? '/formItem' : '/formSupplier', query: { supplierList: itemsSupp } }" class="add-button">
+            {{ activeOption === 'barang' ? 'Tambah Barang' : 'Tambah Supplier' }}
+          </router-link>
         </div>
       </div>
       <DataTable :items="activeOption === 'barang' ? items : itemsSupp" :selectedOption="activeOption" />
@@ -77,14 +79,14 @@ export default {
   methods: {
     async fetchData() {
       try {
-        const limit = 10; // example limit
-        const offset = 0; // example offset
+        const limit = 10; 
+        const offset = 0; 
         const url = `http://159.223.57.121:8090/barang/find-all?limit=${limit}&offset=${offset}`;
         const response = await fetch(url, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.token}` // Access the token from computed property
+            'Authorization': `Bearer ${this.token}` 
           },
           params: {
             limit,
@@ -94,7 +96,7 @@ export default {
 
         if (response.ok) {
           const data = await response.json();
-          this.items = data.data; // update items array with fetched data
+          this.items = data.data; 
         } else {
           // handle error response
         }
@@ -104,14 +106,14 @@ export default {
     },
     async fetchDataSupp() {
       try {
-        const limit = 10; // example limit
-        const offset = 0; // example offset
+        const limit = 10; 
+        const offset = 0; 
         const url = `http://159.223.57.121:8090/supplier/find-all?limit=${limit}&offset=${offset}`;
         const response = await fetch(url, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.token}` // Access the token from computed property
+            'Authorization': `Bearer ${this.token}` 
           },
           params: {
             limit,
@@ -121,7 +123,7 @@ export default {
 
         if (response.ok) {
           const data = await response.json();
-          this.itemsSupp = data.data; // update items array with fetched data
+          this.itemsSupp = data.data; 
         } else {
           // handle error response
         }
@@ -322,7 +324,5 @@ button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-
-/* Add your own styles as needed */
 </style>
 
