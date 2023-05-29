@@ -36,7 +36,7 @@
           </router-link>
         </div>
       </div>
-      <DataTable :items="activeOption === 'barang' ? items : itemsSupp" :selectedOption="activeOption" />
+      <DataTable :selectedOption="activeOption" />
       <div class="pagination">
         <!-- Pagination component or logic goes here -->
       </div>
@@ -51,7 +51,13 @@ import DataTable from './tables/DataTable.vue';
 export default {
   computed: {
     token() {
-      return this.$store.getters.getToken;
+      // Retrieve the token from the store if available
+      let token = this.$store.getters.getToken;
+      if (!token) {
+        // If token is not available in the store, retrieve it from local storage
+        token = localStorage.getItem('token');
+      }
+      return token;
     }
   },
   props: {
@@ -66,8 +72,6 @@ export default {
   },
   data() {
     return {
-      items: [],
-      itemsSupp: [],
       activeOption: 'barang',
       currentDate: '',
       currentTime: '',
@@ -77,60 +81,6 @@ export default {
     DataTable
   },
   methods: {
-    async fetchData() {
-      try {
-        const limit = 10; 
-        const offset = 0; 
-        const url = `http://159.223.57.121:8090/barang/find-all?limit=${limit}&offset=${offset}`;
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.token}` 
-          },
-          params: {
-            limit,
-            offset
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          this.items = data.data; 
-        } else {
-          // handle error response
-        }
-      } catch (error) {
-        // handle network or server errors
-      }
-    },
-    async fetchDataSupp() {
-      try {
-        const limit = 10; 
-        const offset = 0; 
-        const url = `http://159.223.57.121:8090/supplier/find-all?limit=${limit}&offset=${offset}`;
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.token}` 
-          },
-          params: {
-            limit,
-            offset
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          this.itemsSupp = data.data; 
-        } else {
-          // handle error response
-        }
-      } catch (error) {
-        // handle network or server errors
-      }
-    },
     setActiveOption(option) {
       this.activeOption = option;
     },
@@ -143,8 +93,12 @@ export default {
   },
   mounted() {
     this.getCurrentDateTime();
-    this.fetchData();
-    this.fetchDataSupp();
+    this.$store.commit('setFormData', {
+      idSupplier: '',
+      namaSupplier: '',
+      alamatSupplier: '',
+      noTelpSupplier: ''
+    });
   },
 };
 </script>

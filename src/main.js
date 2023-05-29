@@ -10,12 +10,21 @@ import { createStore } from 'vuex';
 
 const store = createStore({
     state: {
-      token: '' 
+      token: localStorage.getItem('token'),
+      formData: {
+        idSupplier: '',
+        namaSupplier: '',
+        alamatSupplier: '',
+        noTelpSupplier: ''
+      }
     },
     mutations: {
       setToken(state, token) {
-          state.token = token; 
-        }
+        state.token = token; 
+      },
+      setFormData(state, formData) {
+        state.formData = formData;
+      }
     },
     actions: {
       setToken({ commit }, token) {
@@ -26,7 +35,7 @@ const store = createStore({
         getToken(state) {
             return state.token; 
         }
-    }
+    },
   });
 
 const routes = [
@@ -56,6 +65,8 @@ const routes = [
     component: AddSupplierForm
   }
 ];
+
+export default store;
 
 const router = createRouter({
   history: createWebHistory(),
