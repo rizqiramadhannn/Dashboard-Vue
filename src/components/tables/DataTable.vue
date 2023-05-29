@@ -136,6 +136,7 @@ export default {
           const data = await response.json();
           console.log(data);
           this.itemsSupp = data.data; 
+          this.$store.commit('setListSupplier', this.itemsSupp);
         } else {
           // handle error response
         }

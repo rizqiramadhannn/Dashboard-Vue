@@ -20,7 +20,7 @@
           <div class="dropdown">
             <input type="text" id="supplier-barang" v-model="selectedSupplier" @click="showSupplierList" required>
             <ul class="dropdown-list" v-show="showDropdown">
-              <li v-for="supplier in supplierList" :key="supplier.id" @click="selectSupplier(supplier.name)">{{ supplier.name }}</li>
+              <li v-for="supplier in listSupplier" :key="supplier.id" @click="selectSupplier(supplier)">{{ supplier.namaSupplier }}</li>
             </ul>
           </div>
         </div>
@@ -41,6 +41,20 @@
           required: true
         }
       },
+      computed: {
+        token() {
+          // Retrieve the token from the store if available
+          let token = this.$store.getters.getToken;
+          if (!token) {
+            // If token is not available in the store, retrieve it from local storage
+            token = localStorage.getItem('token');
+          }
+          return token;
+        },
+        listSupplier() {
+          return this.$store.state.listSupplier;
+        }
+      },
       data() {
         return {
           namaBarang: '',
@@ -48,7 +62,6 @@
           stokBarang: '',
           selectedSupplier: '',
           showDropdown: false,
-          supplierList: [],
           url: '',
         };
       },
@@ -58,20 +71,23 @@
               namaBarang: this.namaBarang,
               hargaBarang: this.hargaBarang,
               stokBarang: this.stokBarang,
-              supplierBarang: this.selectedSupplier
+              supplierBarang: this.supplier
             };
     
             fetch(this.url, {
               method: 'POST',
               headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.token}`
               },
               body: JSON.stringify(formData)
             })
               .then(response => {
                 if (response.ok) {
                   console.log('Form submitted successfully');
-                  this.resetForm();
+                  setTimeout(() => {
+                    this.$router.push('/dashboard');
+                  }, 1000);
                 } else {
                   console.log('Form submission failed');
                 }
@@ -93,15 +109,15 @@
         showSupplierList() {
           this.showDropdown = true;
         },
-        selectSupplier(supplierName) {
-          this.selectedSupplier = supplierName;
+        selectSupplier(supplier) {
+          this.selectedSupplier = supplier.namaSupplier;
           this.showDropdown = false;
-          this.$emit('selectSupplier', supplierName);
+          this.$emit('selectSupplier', supplier.namaSupplier);
         }
       },
       mounted() {
-        console.log(this.itemsSupp)
-        this.supplierList = this.itemsSupp
+        console.log(this.$store.state.listSupplier);
+        this.supplierList = this.$store.state.listSupplier
         if (
             this.namaBarang === '' &&
             this.hargaBarang === '' &&
@@ -217,6 +233,10 @@
 
 #supplier-barang {
   width: 600px;
+}
+
+.dropdown-list .li {
+  color: #000;
 }
   </style>
   

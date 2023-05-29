@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="tambah-supplier">
-      <h3 class="title">Tambah Supplier</h3>
+      <h3 class="title">{{ this.formTitle + 'Supplier' }}</h3>
       <form @submit.prevent="submitForm">
         <div class="form-group">
           <label for="nama-supplier">Nama supplier</label>
@@ -52,7 +52,8 @@ export default {
       alamatSupplierForm: this.alamatSupplier || '',
       noTelpSupplierForm: this.noTelpSupplier || '',
       url: '',
-      method: ''
+      method: '',
+      formTitle: 'Tambah '
     };
   },
   methods: {
@@ -87,8 +88,9 @@ export default {
         });
     },
     cancelForm() {
-      console.log('Form canceled');
-    },
+          console.log('Form canceled');
+          this.$router.go(-1);
+        },
   },
   mounted() {
     this.idSupplierForm = this.formData.idSupplier;
@@ -100,9 +102,11 @@ export default {
       this.alamatSupplierForm === '' &&
       this.notelpSupplierForm === ''
     ) {
+      this.formTitle = 'Tambah ';
       this.url = 'http://159.223.57.121:8090/supplier/create';
       this.method = 'POST'
     } else {
+      this.formTitle = 'Edit '
       this.url = `http://159.223.57.121:8090/supplier/update/${this.formData.idSupplier}`;
       this.method = 'PUT'
     }

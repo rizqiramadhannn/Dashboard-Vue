@@ -16,7 +16,8 @@ const store = createStore({
         namaSupplier: '',
         alamatSupplier: '',
         noTelpSupplier: ''
-      }
+      },
+      listSupplier: []
     },
     mutations: {
       setToken(state, token) {
@@ -24,6 +25,9 @@ const store = createStore({
       },
       setFormData(state, formData) {
         state.formData = formData;
+      },
+      setListSupplier(state, listSupplier) {
+        state.listSupplier = listSupplier;
       }
     },
     actions: {
