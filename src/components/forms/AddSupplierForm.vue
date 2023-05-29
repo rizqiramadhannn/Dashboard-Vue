@@ -5,15 +5,15 @@
       <form @submit.prevent="submitForm">
         <div class="form-group">
           <label for="nama-supplier">Nama supplier</label>
-          <input type="text" id="nama-supplier" placeholder="Masukan Nama Supplier" v-model="namaSupplier" required>
+          <input type="text" id="nama-supplier" placeholder="Masukan Nama Supplier" v-model="namaSupplierForm" required>
         </div>
         <div class="form-group">
           <label for="alamat-supplier">Alamat Supplier</label>
-          <input type="text" id="alamat-supplier" placeholder="Masukan Alamat Supplier" v-model="alamatSupplier" required>
+          <input type="text" id="alamat-supplier" placeholder="Masukan Alamat Supplier" v-model="alamatSupplierForm" required>
         </div>
         <div class="form-group">
           <label for="notelp-supplier">No telp supplier</label>
-          <input type="text" id="notelp-supplier" placeholder="Masukan No Telp Supplier" v-model="notelpSupplier" required>
+          <input type="text" id="notelp-supplier" placeholder="Masukan No Telp Supplier" v-model="notelpSupplierForm" required>
         </div>
         <div class="button-group">
           <button class="btn-cancel" @click="cancelForm">Kembali</button>
@@ -26,29 +26,45 @@
 
 <script>
 export default {
+  props: {
+    idSupplier: Number,
+    namaSupplier: String,
+    alamatSupplier: String,
+    noTelpSupplier: String
+  },
   computed: {
     token() {
-      return this.$store.getters.getToken;
+      // Retrieve the token from the store if available
+      let token = this.$store.getters.getToken;
+      if (!token) {
+        // If token is not available in the store, retrieve it from local storage
+        token = localStorage.getItem('token');
+      }
+      return token;
+    },
+    formData() {
+      return this.$store.state.formData;
     }
   },
   data() {
     return {
-      namaSupplier: '',
-      alamatSupplier: '',
-      notelpSupplier: '',
-      url: ''
+      namaSupplierForm: this.namaSupplier || '',
+      alamatSupplierForm: this.alamatSupplier || '',
+      noTelpSupplierForm: this.noTelpSupplier || '',
+      url: '',
+      method: ''
     };
   },
   methods: {
     submitForm() {
       const formData = {
-        namaSupplier: this.namaSupplier,
-        alamatSupplier: this.alamatSupplier,
-        notelpSupplier: this.notelpSupplier
+        namaSupplier: this.namaSupplierForm,
+        alamatSupplier: this.alamatSupplierForm,
+        notelpSupplier: this.notelpSupplierForm
       };
 
       fetch(this.url, {
-        method: 'POST',
+        method: this.method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.token}`
@@ -58,7 +74,9 @@ export default {
         .then(response => {
           if (response.ok) {
             console.log('Form submitted successfully');
-            this.$router.push('/dashboard');
+            setTimeout(() => {
+              this.$router.push('/dashboard');
+            }, 1000);
           } else {
             // Handle form submission error
             console.log('Form submission failed');
@@ -71,21 +89,22 @@ export default {
     cancelForm() {
       console.log('Form canceled');
     },
-    resetForm() {
-      this.namaSupplier = '';
-      this.alamatSupplier = '';
-      this.notelpSupplier = '';
-    }
   },
   mounted() {
+    this.idSupplierForm = this.formData.idSupplier;
+    this.namaSupplierForm = this.formData.namaSupplier;
+    this.alamatSupplierForm = this.formData.alamatSupplier;
+    this.notelpSupplierForm = this.formData.noTelpSupplier;
     if (
-      this.namaSupplier === '' &&
-      this.alamatSupplier === '' &&
-      this.notelpSupplier === ''
+      this.namaSupplierForm === '' &&
+      this.alamatSupplierForm === '' &&
+      this.notelpSupplierForm === ''
     ) {
       this.url = 'http://159.223.57.121:8090/supplier/create';
+      this.method = 'POST'
     } else {
-      this.url = 'editurl';
+      this.url = `http://159.223.57.121:8090/supplier/update/${this.formData.idSupplier}`;
+      this.method = 'PUT'
     }
     console.log(this.url);
   }

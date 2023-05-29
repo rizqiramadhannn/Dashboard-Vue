@@ -1,11 +1,11 @@
 <template>
-  <table class="data-table">
+  <table v-if="selectedOption === 'barang'" class="data-table">
     <thead>
       <tr>
         <th>No</th>
-        <th v-if="selectedOption === 'barang'">Nama Barang</th>
-        <th v-if="selectedOption === 'barang'">Stock</th>
-        <th v-if="selectedOption === 'barang'">Harga</th>
+        <th>Nama Barang</th>
+        <th>Stock</th>
+        <th>Harga</th>
         <th>Nama Supplier</th>
         <th>Alamat Supplier</th>
         <th>No Telp Supplier</th>
@@ -15,18 +15,39 @@
     <tbody>
       <tr v-for="item in reversedItems" :key="item.id">
         <td>{{ item.id }}</td>
-        <td v-if="selectedOption === 'barang'">{{ item.namaBarang }}</td>
-        <td v-if="selectedOption === 'barang'">{{ item.stok }}</td>
-        <td v-if="selectedOption === 'barang'">{{ item.harga }}</td>
-        <td v-if="selectedOption === 'barang'">{{ item.supplier.namaSupplier }}</td>
-        <td v-if="selectedOption === 'barang'">{{ item.supplier.alamat }}</td>
-        <td v-if="selectedOption === 'barang'">{{ item.supplier.noTelp }}</td>
-        <td v-if="selectedOption === 'supplier'">{{ item.namaSupplier }}</td>
-        <td v-if="selectedOption === 'supplier'">{{ item.alamat }}</td>
-        <td v-if="selectedOption === 'supplier'">{{ item.noTelp }}</td>
+        <td>{{ item.namaBarang }}</td>
+        <td>{{ item.stok }}</td>
+        <td>{{ item.harga }}</td>
+        <td>{{ item.supplier.namaSupplier }}</td>
+        <td>{{ item.supplier.alamat }}</td>
+        <td>{{ item.supplier.noTelp }}</td>
         <td>
           <button class="delete-button" @click="deleteItem(item.id)">Hapus</button>
           <button class="update-button">Update</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table v-else-if="selectedOption === 'supplier'" class="data-table">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Nama Supplier</th>
+        <th>Alamat Supplier</th>
+        <th>No Telp Supplier</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="item in reversedItemsSupp" :key="item.id">
+        <td>{{ item.id }}</td>
+        <td>{{ item.namaSupplier }}</td>
+        <td>{{ item.alamat }}</td>
+        <td>{{ item.noTelp }}</td>
+        <td>
+          <button class="delete-button" @click="deleteItem(item.id)">Hapus</button>
+          <button class="update-button" @click="$event => fetchSuppbyId(item.id)">Update</button>
         </td>
       </tr>
     </tbody>
@@ -36,10 +57,6 @@
 <script>
 export default {
   props: {
-    items: {
-      type: Array,
-      required: true
-    },
     selectedOption: {
       type: String,
       required: true
@@ -49,11 +66,111 @@ export default {
     reversedItems() {
       return this.items.slice().reverse();
     },
+    reversedItemsSupp() {
+      return this.itemsSupp.slice().reverse();
+    },
     token() {
-      return this.$store.getters.getToken;
+      // Retrieve the token from the store if available
+      let token = this.$store.getters.getToken;
+      if (!token) {
+        // If token is not available in the store, retrieve it from local storage
+        token = localStorage.getItem('token');
+      }
+      return token;
+    }
+  },
+  data() {
+    return {
+      items: [],
+      itemsSupp: [],
+      itemEdit: [],
     }
   },
   methods: {
+    async fetchData() {
+      try {
+        const limit = 10; 
+        const offset = 0; 
+        const url = `http://159.223.57.121:8090/barang/find-all?limit=${limit}&offset=${offset}`;
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.token}` 
+          },
+          params: {
+            limit,
+            offset
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          this.items = data.data; 
+        } else {
+          // handle error response
+        }
+      } catch (error) {
+        // handle network or server errors
+      }
+    },
+    async fetchDataSupp() {
+      try {
+        const limit = 10; 
+        const offset = 0; 
+        const url = `http://159.223.57.121:8090/supplier/find-all?limit=${limit}&offset=${offset}`;
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.token}` 
+          },
+          params: {
+            limit,
+            offset
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          this.itemsSupp = data.data; 
+        } else {
+          // handle error response
+        }
+      } catch (error) {
+        // handle network or server errors
+      }
+    },
+    async fetchSuppbyId(id) {
+      try {
+        const url = `http://159.223.57.121:8090/supplier/find-by-id/${id}`;
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.token}` 
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          this.itemEdit = data.data;
+          console.log(this.itemEdit.id);
+          this.$store.commit('setFormData', {
+            idSupplier: this.itemEdit.id,
+            namaSupplier: this.itemEdit.namaSupplier,
+            alamatSupplier: this.itemEdit.alamat,
+            noTelpSupplier: this.itemEdit.noTelp
+          });
+          this.$router.push('/formSupplier');
+        } else {
+          // handle error response
+        }
+      } catch (error) {
+        // handle network or server errors
+      }
+    },
     deleteItem(id) {
       let deleteUrl = '';
       if (this.selectedOption === 'supplier') {
@@ -71,8 +188,8 @@ export default {
           if (response.ok) {
               console.log('Item deleted successfully');
               setTimeout(() => {
-              location.reload();
-            }, 1000);
+                location.reload();
+              }, 1000);
           } else {
             // Handle delete request error
             console.log('Item deletion failed');
@@ -82,8 +199,12 @@ export default {
           // Handle network error
           console.log('Network error:', error);
         });
-    }
-  }
+    },
+  },
+  mounted() {
+    this.fetchData();
+    this.fetchDataSupp();
+  },
 };
 </script>
 
